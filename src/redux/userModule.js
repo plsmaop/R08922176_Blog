@@ -3,6 +3,7 @@ export const actionsTypes = {
   FETCH_START: 'FETCH_START',
   FETCH_END: 'FETCH_END',
   USER_LOGIN: 'USER_LOGIN',
+  USER_LOGOUT: 'USER_LOGOUT',
   USER_REGISTER: 'USER_REGISTER',
   RECIEVE_USER_INFO: 'RECIEVE_USER_INFO',
   SET_MESSAGE: 'SET_MESSAGE',
@@ -16,6 +17,7 @@ export const actions = {
     username,
     password,
   }),
+  userLogout: () => ({ type: actionsTypes.USER_LOGOUT }),
   userRegister: (username, password) => ({
     type: actionsTypes.USER_REGISTER,
     username,
@@ -33,9 +35,9 @@ export const actions = {
 // initial state
 const initialState = {
   isLogin: false,
-  isFetching: true,
+  isFetching: false,
   msg: {
-    type: 1,
+    isReqSuccess: true,
     content: '',
   },
   userInfo: {},
@@ -57,7 +59,7 @@ export default (state = initialState, action) => {
         ...state,
         isFetching: false,
         msg: {
-          type: action.msgType,
+          isReqSuccess: action.isReqSuccess,
           content: action.msgContent,
         },
       };
@@ -66,6 +68,12 @@ export default (state = initialState, action) => {
         ...state,
         userInfo: action.data,
         isLogin: true,
+      };
+    case actionsTypes.USER_LOGOUT:
+      return {
+        ...state,
+        isLogin: false,
+        userInfo: {},
       };
     default:
       return state;

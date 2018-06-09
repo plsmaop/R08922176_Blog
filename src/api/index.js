@@ -8,9 +8,11 @@ const config = {
   transformRequest: [
     (data) => {
       let ret = '';
-      Object.entries(data).forEach(([key, value]) => {
-        ret += `${encodeURIComponent(key)}=${encodeURIComponent(value)}&`;
-      });
+      if (data) {
+        Object.entries(data).forEach(([key, value]) => {
+          ret += `${encodeURIComponent(key)}=${encodeURIComponent(value)}&`;
+        });
+      }
       // return CryptoJS.AES.encrypt(JSON.stringify(ret), 'suck');
       return ret;
     },
@@ -23,6 +25,7 @@ const config = {
   },
   timeout: 10000,
   responseType: 'json',
+  withCredentials: true,
 };
 
 // return data

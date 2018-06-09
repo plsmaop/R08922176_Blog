@@ -5,12 +5,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
 import Button from '@material-ui/core/Button';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import Switch from '@material-ui/core/Switch';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import { Link } from 'react-router-dom';
@@ -25,6 +21,7 @@ const styles = {
   menuButton: {
     marginLeft: -12,
     marginRight: 20,
+    display: 'inline-block',
   },
 };
 
@@ -32,12 +29,14 @@ class NavBar extends React.Component {
   constructor() {
     super();
     this.state = {
-      auth: true,
       anchorEl: null,
     };
+    this.handleClose = this.handleClose.bind(this);
+    this.handleMenu = this.handleMenu.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
   }
-  handleChange(event, checked) {
-    this.setState({ auth: checked });
+  componentDidMount() {
+    this.props.userAuth();
   }
   handleMenu(event) {
     this.setState({ anchorEl: event.currentTarget });
@@ -45,35 +44,82 @@ class NavBar extends React.Component {
   handleClose() {
     this.setState({ anchorEl: null });
   }
-  componentDidMount() {
-    this.props.userAuth();
+  handleLogout() {
+    this.setState({ anchorEl: null });
+    this.props.userLogout();
   }
   render() {
-    const { classes } = this.props;
-    const { auth, anchorEl } = this.state;
+    const {
+      classes, isLogin, isFetching,
+      userInfo,
+    } = this.props;
+    const { anchorEl } = this.state;
     const open = Boolean(anchorEl);
+    const login = (isLogin && !isFetching && userInfo) ? (
+      <div>
+        <IconButton
+          aria-owns={open ? 'menu-appbar' : null}
+          aria-haspopup="true"
+          onClick={this.handleMenu}
+          color="inherit"
+        >
+          <AccountCircle />
+        </IconButton>
+        <Menu
+          id="menu-appbar"
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          open={open}
+          onClose={this.handleClose}
+        >
+          <MenuItem onClick={this.handleClose}>我的文章</MenuItem>
+          <MenuItem onClick={this.handleLogout}>登出</MenuItem>
+        </Menu>
+        <Button
+          color="inherit"
+          onClick={this.handleMenu}
+        > {`Hi, ${userInfo.username}`}
+        </Button>
+      </div>
+    ) :
+      (
+        <div>
+          <Button
+            color="inherit"
+            component={({ ...props }) => <Link to="/login" {...props} />}
+          >登入
+          </Button>
+          <Button
+            color="inherit"
+            component={({ ...props }) => <Link to="/register" {...props} />}
+          >註冊
+          </Button>
+        </div>
+      );
     return (
       <div className={classes.root}>
         <AppBar position="static">
           <Toolbar>
-            <Typography variant="title" color="inherit" className={classes.flex}>
-              ㄅㄌㄍ
+            <Typography
+              variant="title"
+              color="inherit"
+              className={classes.flex}
+              component={({ ...props }) => <Link to="/" {...props} />}
+            >ㄅㄌㄍ
             </Typography>
             <Button
               color="inherit"
               component={({ ...props }) => <Link to="/articleList" {...props} />}
             >文章列表
             </Button>
-            <Button
-              color="inherit"
-              component={({ ...props }) => <Link to="/login" {...props} />}
-            >登入
-            </Button>
-            <Button
-              color="inherit"
-              component={({ ...props }) => <Link to="/register" {...props} />}
-            >註冊
-            </Button>
+            {login}
           </Toolbar>
         </AppBar>
       </div>
@@ -82,8 +128,12 @@ class NavBar extends React.Component {
 }
 
 NavBar.propTypes = {
+  isLogin: PropTypes.bool.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+  userInfo: PropTypes.objectOf(String).isRequired,
   classes: PropTypes.objectOf(String).isRequired,
   userAuth: PropTypes.func.isRequired,
+  userLogout: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(NavBar);

@@ -3,23 +3,23 @@ import functions from '../functions';
 import models from '../db/models/index';
 
 const { UserModel } = models;
-const { hash, response, decrypt } = functions;
+const { hash, response } = functions;
 
 const router = express.Router();
 
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
   if (username.length === 0) {
-    response(res, 400, 2, '帳號不可為空');
+    response(res, 200, 2, '帳號不可為空');
     return;
   }
   if (password.length === 0) {
-    response(res, 400, 2, '密碼不可為空');
+    response(res, 200, 2, '密碼不可為空');
     return;
   }
   UserModel.findOne({ username }).then((userInfo) => {
     if (!userInfo) {
-      response(res, 400, 1, '帳號或密碼錯誤');
+      response(res, 200, 1, '帳號或密碼錯誤');
       return;
     }
     hash.matchPassword(password, userInfo.password).then((isMatch) => {
@@ -30,9 +30,10 @@ router.post('/login', (req, res) => {
         data.userId = userInfo._id;
         // setting session
         req.session.userInfo = data;
+        // console.log(req.session);
         response(res, 200, 0, '登入成功', data);
       }
-      else response(res, 400, 1, '帳號或密碼錯誤');
+      else response(res, 200, 1, '帳號或密碼錯誤');
     });
   }).catch((err) => {
     console.log(err);
@@ -43,11 +44,11 @@ router.post('/login', (req, res) => {
 router.post('/register', (req, res) => {
   const { username, password } = req.body;
   if (username.length === 0) {
-    response(res, 400, 2, '帳號不可為空');
+    response(res, 200, 2, '帳號不可為空');
     return;
   }
   if (password.length === 0) {
-    response(res, 400, 2, '密碼不可為空');
+    response(res, 200, 2, '密碼不可為空');
     return;
   }
   UserModel.findOne({ username })
@@ -72,7 +73,7 @@ router.post('/register', (req, res) => {
                 data.userType = userInfo.type;
                 data.userId = userInfo._id;
                 console.log(data);
-                response(res, 200, 0, '註冊成功', data);
+                response(res, 200, 0, '註冊成功，請使用這組帳密登入', data);
               });
           });
       });
@@ -91,8 +92,9 @@ router.get('/userInfo', (req, res) => {
 });
 
 router.get('/logout', (req, res) => {
+  if (req.session.userInfo) console.log(`${req.session.userInfo.username} logout`);
   req.session.destroy();
-  res.redirect('/');
+  response(res, 200, 0, '');
 });
 
 export default router;

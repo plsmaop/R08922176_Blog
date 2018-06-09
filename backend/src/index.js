@@ -25,7 +25,11 @@ backend.use(session({
   secret: 'i_am_lazyeeeee',
   resave: true,
   saveUninitialized: true,
-  cookie: { maxAge: 60 * 1000 * 30 },
+  cookie: {
+    maxAge: 60 * 1000 * 30,
+    secure: false,
+    httpOnly: false,
+  },
 }));
 
 
