@@ -1,6 +1,8 @@
 import { combineReducers } from 'redux';
-import user from './userModule';
+import global from './globalModule';
+import article from './articleModule';
 
 export default combineReducers({
-  user,
+  global,
+  article,
 });

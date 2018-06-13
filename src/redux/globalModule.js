@@ -4,6 +4,7 @@ export const actionsTypes = {
   FETCH_END: 'FETCH_END',
   USER_LOGIN: 'USER_LOGIN',
   USER_LOGOUT: 'USER_LOGOUT',
+  CLEAR_USER_INFO: 'CLEAR_USER_INFO',
   USER_REGISTER: 'USER_REGISTER',
   RECIEVE_USER_INFO: 'RECIEVE_USER_INFO',
   SET_MESSAGE: 'SET_MESSAGE',
@@ -69,7 +70,7 @@ export default (state = initialState, action) => {
         userInfo: action.data,
         isLogin: true,
       };
-    case actionsTypes.USER_LOGOUT:
+    case actionsTypes.CLEAR_USER_INFO:
       return {
         ...state,
         isLogin: false,

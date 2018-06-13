@@ -1,11 +1,11 @@
 import { connect } from 'react-redux';
 import Register from './registerComponent';
-import { actions } from '../../redux/userModule';
+import { actions } from '../../redux/globalModule';
 
 const { userRegister } = actions;
 const mapStateToProps = state => ({
-  isFetching: state.user.isFetching,
-  reqMsg: state.user.msg,
+  isFetching: state.global.isFetching,
+  reqMsg: state.global.msg,
 });
 
 export default connect(mapStateToProps, { userRegister })(Register);

@@ -3,10 +3,9 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Snackbar from '@material-ui/core/Snackbar';
-import Button from '@material-ui/core/Button';
 import { Redirect } from 'react-router';
+import ButtonProgress from '../../components/buttonProgress';
 
 const styles = theme => ({
   textField: {
@@ -15,26 +14,12 @@ const styles = theme => ({
     width: 200,
     textAlign: 'center',
   },
-  button: {
-    margin: theme.spacing.unit,
-  },
-  wrapper: {
-    margin: theme.spacing.unit,
-    position: 'relative',
-  },
   flex: {
     flex: 1,
   },
   root: {
     textAlign: 'center',
     marginTop: '5%',
-  },
-  buttonProgress: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    marginTop: -12,
-    marginLeft: -12,
   },
 });
 
@@ -63,6 +48,7 @@ class Login extends Component {
     this.setState({ snackBarOpen: false });
   }
   render() {
+    document.title = '登入';
     const {
       classes, isLogin, isFetching,
       reqMsg,
@@ -94,18 +80,7 @@ class Login extends Component {
           margin="normal"
           onChange={e => handleInputChange(e, 'password')}
         />
-        <div className={classes.wrapper}>
-          <Button
-            variant="raised"
-            color="primary"
-            className={classes.button}
-            onClick={handleLogin}
-            disabled={isFetching}
-          >
-            登入
-          </Button>
-          {isFetching && <CircularProgress size={24} className={classes.buttonProgress} />}
-        </div>
+        <ButtonProgress handleClick={handleLogin} isFetching={isFetching} type="登入" />
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
           open={!reqMsg.isReqSuccess && snackBarOpen && !isFetching}
@@ -123,9 +98,12 @@ class Login extends Component {
 Login.propTypes = {
   isLogin: PropTypes.bool.isRequired,
   isFetching: PropTypes.bool.isRequired,
-  reqMsg: PropTypes.object.isRequired,
   classes: PropTypes.objectOf(String).isRequired,
   userLogin: PropTypes.func.isRequired,
+  reqMsg: PropTypes.shape({
+    content: PropTypes.string.isRequired,
+    isReqSuccess: PropTypes.bool.isRequired,
+  }).isRequired,
 };
 
 export default withStyles(styles)(Login);

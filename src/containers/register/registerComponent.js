@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Snackbar from '@material-ui/core/Snackbar';
-import Button from '@material-ui/core/Button';
+import { Redirect } from 'react-router';
+import ButtonProgress from '../../components/buttonProgress';
 
 const styles = theme => ({
   textField: {
@@ -43,11 +43,24 @@ class Register extends Component {
       username: '',
       password: '',
       snackBarOpen: false,
+      redirect: false,
     };
     this.handleRegister = this.handleRegister.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleClose = this.handleClose.bind(this);
   }
+  /* componentWillMount() {
+    console.log(this.props.reqMsg.isReqSuccess, this.state.snackBarOpen);
+    if (this.props.reqMsg.isReqSuccess && this.state.snackBarOpen) {
+      setTimeout(() => this.setState({ redirect: true }), 1000);
+    }
+  } */
+  /* componentWillMount() {
+    console.log('cidk');
+    if (this.props.reqMsg.isReqSuccess && this.state.snackBarOpen) {
+      setTimeout(() => this.setState({ redirect: true }), 1000);
+    }
+  } */
   handleRegister() {
     const { username, password } = this.state;
     this.props.userRegister(username, password);
@@ -61,12 +74,15 @@ class Register extends Component {
     this.setState({ snackBarOpen: false });
   }
   render() {
-    const { snackBarOpen } = this.state;
+    document.title = '註冊';
+    const { snackBarOpen, redirect } = this.state;
     const { classes, isFetching, reqMsg } = this.props;
     const { handleRegister, handleInputChange, handleClose } = this;
-    if (reqMsg.isReqSuccess) {
-
+    if (reqMsg.isReqSuccess && snackBarOpen) {
+      setTimeout(() => this.setState({ snackBarOpen: false }), 1500);
+      setTimeout(() => this.setState({ redirect: true }), 2000);
     }
+    if (redirect) return (<Redirect to="/login" />);
     return (
       <div className={classes.root}>
         <Typography variant="title" color="inherit" className={classes.flex}>
@@ -89,18 +105,7 @@ class Register extends Component {
           margin="normal"
           onChange={e => handleInputChange(e, 'password')}
         />
-        <div className={classes.wrapper}>
-          <Button
-            variant="raised"
-            color="primary"
-            className={classes.button}
-            onClick={handleRegister}
-            disabled={isFetching}
-          >
-            註冊
-          </Button>
-          {isFetching && <CircularProgress size={24} className={classes.buttonProgress} />}
-        </div>
+        <ButtonProgress handleClick={handleRegister} isFetching={isFetching} type="註冊" />
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
           open={snackBarOpen && !isFetching}
@@ -117,9 +122,12 @@ class Register extends Component {
 
 Register.propTypes = {
   classes: PropTypes.objectOf(String).isRequired,
-  reqMsg: PropTypes.object.isRequired,
   isFetching: PropTypes.bool.isRequired,
   userRegister: PropTypes.func.isRequired,
+  reqMsg: PropTypes.shape({
+    content: PropTypes.string.isRequired,
+    isReqSuccess: PropTypes.bool.isRequired,
+  }).isRequired,
 };
 
 export default withStyles(styles)(Register);

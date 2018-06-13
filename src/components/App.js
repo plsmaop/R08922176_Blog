@@ -1,20 +1,33 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import Grid from '@material-ui/core/Grid';
+import { withStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 import NavBar from '../containers/navBar';
-import Login from '../containers/login';
-import Register from '../containers/register';
-import ArticleList from '../containers/articleList';
-import PageNotFound from './pageNotFound';
+import Router from './router';
 
-export default () => (
+const styles = {
+  root: {
+    textAlign: 'center',
+    flexGrow: 1,
+    marginTop: '2%',
+  },
+};
+
+const App = ({ classes }) => (
   <div>
     <NavBar />
-    <Switch>
-      <Route path="/" exact component={ArticleList} />
-      <Route path="/login" exact component={Login} />
-      <Route path="/register" exact component={Register} />
-      <Route path="/articleList" exact component={ArticleList} />
-      <Route component={PageNotFound} />
-    </Switch>
+    <div className={classes.root}>
+      <Grid container spacing={24} direction="row" align="center" justify="center">
+        <Grid item xs={11} sm={6}>
+          <Router />
+        </Grid>
+      </Grid>
+    </div>
   </div>
 );
+
+App.propTypes = {
+  classes: PropTypes.objectOf(String).isRequired,
+};
+
+export default withStyles(styles)(App);

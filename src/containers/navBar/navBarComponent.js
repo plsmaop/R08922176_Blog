@@ -79,6 +79,11 @@ class NavBar extends React.Component {
           open={open}
           onClose={this.handleClose}
         >
+          <MenuItem
+            onClick={this.handleClose}
+            component={({ ...props }) => <Link to="/editor" {...props} />}
+          >發文
+          </MenuItem>
           <MenuItem onClick={this.handleClose}>我的文章</MenuItem>
           <MenuItem onClick={this.handleLogout}>登出</MenuItem>
         </Menu>

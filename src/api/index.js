@@ -1,6 +1,4 @@
 import axios from 'axios';
-import Qs from 'qs';
-import CryptoJS from 'crypto-js';
 import serverUrl from '../configuration';
 
 const config = {
@@ -36,3 +34,5 @@ axios.interceptors.response.use((res) => {
 
 export const get = url => axios.get(url, config);
 export const post = (url, data) => axios.post(url, data, config);
+export const del = (url, params) => axios.delete(url, { ...config, params });
+export const patch = (url, data) => axios.patch(url, data, config);

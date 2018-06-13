@@ -63,7 +63,6 @@ router.post('/register', (req, res) => {
           password: hashPwd,
           type: username === 'admin' ? 'admin' : 'user',
         });
-        console.log(user);
         user.save()
           .then(() => {
             UserModel.findOne({ username })
@@ -72,7 +71,6 @@ router.post('/register', (req, res) => {
                 data.username = userInfo.username;
                 data.userType = userInfo.type;
                 data.userId = userInfo._id;
-                console.log(data);
                 response(res, 200, 0, '註冊成功，請使用這組帳密登入', data);
               });
           });
@@ -94,7 +92,7 @@ router.get('/userInfo', (req, res) => {
 router.get('/logout', (req, res) => {
   if (req.session.userInfo) console.log(`${req.session.userInfo.username} logout`);
   req.session.destroy();
-  response(res, 200, 0, '');
+  response(res, 200, 0, '登出成功');
 });
 
 export default router;

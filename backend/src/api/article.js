@@ -6,63 +6,112 @@ const router = express.Router();
 const { ArticleModel } = models;
 const { response } = functions;
 
-router.post('/addArticle', (req, res) => {
+router.post('/newArticle', (req, res) => {
+  console.log(req.body);
   const {
-    title, content, time,
-    isPublish,
+    title, partialContent,
+    content, time,
   } = req.body;
-  const author = req.session.userInfo.username;
-  const commentCount = 0;
-  const tempArticle = new ArticleModel({
-    title,
-    content,
-    isPublish,
-    commentCount,
-    time,
-    author,
-  });
-  tempArticle.save().then((data) => {
-    response(res, 200, 0, '保存成功', data);
-  }).cancel((err) => {
-    console.log(err);
-    response(res);
-  });
+  if (!req.session.userInfo) response(res, 200, 1, '登入逾期，請重新登入');
+  else {
+    const author = req.session.userInfo.username;
+    const tempArticle = new ArticleModel({
+      title,
+      content,
+      partialContent,
+      time,
+      author,
+    });
+    tempArticle.save().then((data) => {
+      response(res, 200, 0, '發文成功', data);
+    }).catch((err) => {
+      console.log(err);
+      response(res, 200, 2, '發文失敗');
+    });
+  }
 });
 
-router.post('/updateArticle', (req, res) => {
+router.patch('/:id', (req, res) => {
   const {
     title,
     content,
     time,
-    isPublish,
-    id,
+    shortContent,
   } = req.body;
+  const { id } = req.params;
   ArticleModel.update(
     { _id: id },
     {
-      title, content, time, isPublish,
+      title, content, time, shortContent,
     },
   ).then((result) => {
     console.log(result);
     response(res, 200, 0, '更新成功', result);
-  }).cancel((err) => {
+  }).catch((err) => {
     console.log(err);
-    response(res);
+    response(res, 200, 2, '更新失敗');
   });
 });
 
-router.get('/delArticle', (req, res) => {
-  const { id } = req.query;
+router.delete('/:id', (req, res) => {
+  const { id } = req.params;
+  if (!req.session.userInfo) {
+    response(res, 200, 1, '登入逾期，請重新登入');
+    return;
+  }
+  const author = req.session.userInfo.username;
+  ArticleModel.findOne({ _id: id }).then((result) => {
+    if (!result) response(res, 200, 2, '文章不存在');
+    else if (result.author !== author) response(res, 200, 1, '權限錯誤');
+  }).catch((err) => {
+    console.log(err);
+    response(res, 200, 2, '刪除失敗!');
+  });
   ArticleModel.remove({ _id: id })
     .then((result) => {
       if (result.result.n === 1) {
-        response(res, 200, 0, '删除成功!');
+        response(res, 200, 0, '刪除成功!');
       } else {
-        response(res, 200, 1, '文章不存在');
+        response(res, 200, 2, '文章不存在');
       }
-    }).cancel((err) => {
+    }).catch((err) => {
       console.log(err);
-      response(res);
+      response(res, 200, 2, '刪除失敗!');
+    });
+});
+
+router.get('/articleList', (req, res) => {
+  const responseData = {
+    total: 0,
+    list: [],
+  };
+  ArticleModel.count()
+    .then((count) => {
+      responseData.total = count;
+      ArticleModel.find({}, '_id title author time partialContent').then((result) => {
+        responseData.list = result;
+        response(res, 200, 0, '成功獲取文章列表', responseData);
+      }).catch((err) => {
+        response(res, 200, 2, '獲取文章列表失敗');
+        console.log(err);
+      });
+    }).catch((err) => {
+      response(res, 200, 2, '獲取文章列表失敗');
+      console.log(err);
+    });
+});
+
+
+router.get('/:id', (req, res) => {
+  const { id } = req.params;
+  ArticleModel.findOne({ _id: id })
+    .then((result) => {
+      console.log(result);
+      if (result) response(res, 200, 0, '成功載入文章', result);
+      else response(res, 200, 2, '文章不存在');
+    }).catch((err) => {
+      response(res, 200, 2, '載入文章失敗');
+      console.log(err);
     });
 });
 

@@ -26,7 +26,7 @@ backend.use(session({
   resave: true,
   saveUninitialized: true,
   cookie: {
-    maxAge: 60 * 1000 * 30,
+    maxAge: 60 * 1000 * 60,
     secure: false,
     httpOnly: false,
   },
@@ -35,13 +35,11 @@ backend.use(session({
 
 // router
 backend.use('/', connectHistoryApiFallback());
-// server.use('/', require('./main'));
-// server.use('/admin', require('./admin'));
 backend.use('/api', apiRouter);
 
 // data base
 mongoose.Promise = bluebird;
-mongoose.connect(`mongodb://${dbUrl}`, (err) => {
+mongoose.connect(dbUrl, (err) => {
   if (err) {
     console.log(err, 'failde to connect to db');
     return;
@@ -56,5 +54,6 @@ mongoose.connect(`mongodb://${dbUrl}`, (err) => {
   });
 });
 
-// backend.use('/', (req, res) => res.sendFile(__dirname+'/build/index.html'));
-// backend.use(express.static(__dirname+'/build'));
+if (process.env.NODE_ENV === 'production') {
+  backend.use(express.static(path.join(__dirname, 'build')));
+}
