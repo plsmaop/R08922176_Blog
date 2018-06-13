@@ -48,6 +48,10 @@ export function* postArticleFlow() {
             msgContent: res.message,
             isReqSuccess: true,
           });
+          yield put({
+            type: ArticleActionsTypes.RECIEVE_ARTICLE,
+            data: res.data,
+          });
           yield put({ type: ArticleActionsTypes.CLEAR_DRAFT });
         } else if (res.code === 1) {
           // 請重新登入

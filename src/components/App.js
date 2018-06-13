@@ -9,7 +9,7 @@ const styles = {
   root: {
     textAlign: 'center',
     flexGrow: 1,
-    marginTop: '2%',
+    marginTop: '10%',
   },
 };
 
@@ -17,8 +17,8 @@ const App = ({ classes }) => (
   <div>
     <NavBar />
     <div className={classes.root}>
-      <Grid container spacing={24} direction="row" align="center" justify="center">
-        <Grid item xs={11} sm={6}>
+      <Grid container spacing={0} direction="row" align="center" justify="center">
+        <Grid item xs={24} sm={9}>
           <Router />
         </Grid>
       </Grid>

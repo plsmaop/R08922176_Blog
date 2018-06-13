@@ -51,7 +51,8 @@ class EditorToHTML extends Component {
     this.props.updateContent(JSON.stringify(convertToRaw(contentState)));
 
     const plainText = contentState.getPlainText();
-    if (plainText.length < 20) this.props.updatePartialContent(`${plainText}...`);
+    const len = plainText.length;
+    if (len < 20 && len > 0) this.props.updatePartialContent(`${plainText}...`);
     // console.log(htmlToDraft(draftToHtml(convertToRaw(editorState.getCurrentContent()))));
   }
   handleTitleChange(e) {
@@ -66,6 +67,7 @@ class EditorToHTML extends Component {
   }
   render() {
     document.title = '發表文章';
+    const { articleDetail } = this.props;
     const {
       handleTitleChange, handleSendOut, handleClose,
     } = this;
@@ -78,6 +80,11 @@ class EditorToHTML extends Component {
       reqMsg,
     } = this.props;
     if (redirectToLogin) return (<Redirect to="/login" />);
+    if (redirectToArticle) return (<Redirect to={`/article/${articleDetail._id}`} />);
+    if (reqMsg.content === '發文成功') {
+      setTimeout(() => this.setState({ snackBarOpen: false }), 1500);
+      setInterval(() => this.setState({ redirectToArticle: true }), 2000);
+    }
     if (!isLogin && !reqMsg.isReqSuccess) {
       setTimeout(() => this.setState({ snackBarOpen: false }), 1500);
       setTimeout(() => this.setState({ redirectToLogin: true }), 2000);
@@ -88,7 +95,7 @@ class EditorToHTML extends Component {
           發表文章
         </Typography>
         <div className={classes.content}>
-          <Paper>
+          <Paper elevation={1}>
             <div className={classes.container}>
               <TextField
                 label="輸入標題"
@@ -98,15 +105,15 @@ class EditorToHTML extends Component {
                 onChange={e => handleTitleChange(e)}
               />
             </div>
+            <div className={classes.editor}>
+              <Editor
+                editorState={editorState}
+                wrapperClassName="rdw-editor-wrapper"
+                editorClassName="demo-editor rdw-editor-main"
+                onEditorStateChange={this.onEditorStateChange}
+              />
+            </div>
           </Paper>
-          <div className={classes.editor}>
-            <Editor
-              editorState={editorState}
-              wrapperClassName="rdw-editor-wrapper"
-              editorClassName="demo-editor rdw-editor-main"
-              onEditorStateChange={this.onEditorStateChange}
-            />
-          </div>
           <ButtonProgress handleClick={handleSendOut} isFetching={isFetching} type="發文" />
         </div>
         <Snackbar
@@ -128,6 +135,7 @@ EditorToHTML.propTypes = {
   postArticle: PropTypes.func.isRequired,
   isLogin: PropTypes.bool.isRequired,
   isFetching: PropTypes.bool.isRequired,
+  articleDetail: PropTypes.objectOf(String).isRequired,
   classes: PropTypes.objectOf(String).isRequired,
   reqMsg: PropTypes.shape({
     content: PropTypes.string.isRequired,

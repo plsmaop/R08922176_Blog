@@ -30,6 +30,7 @@ class Login extends Component {
       username: '',
       password: '',
       snackBarOpen: false,
+      redirect: false,
     };
     this.handleLogin = this.handleLogin.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -50,14 +51,16 @@ class Login extends Component {
   render() {
     document.title = '登入';
     const {
-      classes, isLogin, isFetching,
+      classes, isFetching,
       reqMsg,
     } = this.props;
-    const { snackBarOpen } = this.state;
+    const { snackBarOpen, redirect } = this.state;
     const { handleLogin, handleInputChange, handleClose } = this;
-    if (isLogin) {
-      return (<Redirect to="/" />);
+    if (reqMsg.isReqSuccess && snackBarOpen) {
+      setTimeout(() => this.setState({ snackBarOpen: false }), 1500);
+      setTimeout(() => this.setState({ redirect: true }), 2000);
     }
+    if (redirect) return (<Redirect to="/" />);
     return (
       <div className={classes.root}>
         <Typography variant="title" color="inherit" className={classes.flex}>
@@ -83,7 +86,7 @@ class Login extends Component {
         <ButtonProgress handleClick={handleLogin} isFetching={isFetching} type="登入" />
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-          open={!reqMsg.isReqSuccess && snackBarOpen && !isFetching}
+          open={snackBarOpen && !isFetching}
           onClose={handleClose}
           ContentProps={{
             'aria-describedby': 'message-id',

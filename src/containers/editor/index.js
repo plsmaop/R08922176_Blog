@@ -10,6 +10,7 @@ const mapStateToProps = state => ({
   isLogin: state.global.isLogin,
   isFetching: state.global.isFetching,
   reqMsg: state.global.msg,
+  articleDetail: state.article.articleDetail,
 });
 
 export default connect(mapStateToProps, {

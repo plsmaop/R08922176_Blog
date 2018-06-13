@@ -10,6 +10,8 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import { Link } from 'react-router-dom';
+import Snackbar from '@material-ui/core/Snackbar';
+import grey from '@material-ui/core/colors/grey';
 
 const styles = {
   root: {
@@ -23,6 +25,8 @@ const styles = {
     marginRight: 20,
     display: 'inline-block',
   },
+  bar: {
+  },
 };
 
 class NavBar extends React.Component {
@@ -30,6 +34,7 @@ class NavBar extends React.Component {
     super();
     this.state = {
       anchorEl: null,
+      snackBarOpen: false,
     };
     this.handleClose = this.handleClose.bind(this);
     this.handleMenu = this.handleMenu.bind(this);
@@ -48,12 +53,15 @@ class NavBar extends React.Component {
     this.setState({ anchorEl: null });
     this.props.userLogout();
   }
+  handleSnackBarClose() {
+    this.setState({ snackBarOpen: false });
+  }
   render() {
     const {
       classes, isLogin, isFetching,
-      userInfo,
+      userInfo, reqMsg,
     } = this.props;
-    const { anchorEl } = this.state;
+    const { anchorEl, snackBarOpen } = this.state;
     const open = Boolean(anchorEl);
     const login = (isLogin && !isFetching && userInfo) ? (
       <div>
@@ -108,9 +116,12 @@ class NavBar extends React.Component {
           </Button>
         </div>
       );
+    if (snackBarOpen) {
+      setInterval(() => this.setState({ snackBarOpen: false }), 1500);
+    }
     return (
       <div className={classes.root}>
-        <AppBar position="static">
+        <AppBar position="fixed" color="default" elevation={0} className={classes.bar}>
           <Toolbar>
             <Typography
               variant="title"
@@ -127,6 +138,15 @@ class NavBar extends React.Component {
             {login}
           </Toolbar>
         </AppBar>
+        <Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          open={snackBarOpen && reqMsg.content.length > 0 && !isFetching}
+          onClose={this.handleSnackBarClose}
+          ContentProps={{
+            'aria-describedby': 'message-id',
+          }}
+          message={<span id="message-id">{reqMsg.content}</span>}
+        />
       </div>
     );
   }
@@ -139,6 +159,10 @@ NavBar.propTypes = {
   classes: PropTypes.objectOf(String).isRequired,
   userAuth: PropTypes.func.isRequired,
   userLogout: PropTypes.func.isRequired,
+  reqMsg: PropTypes.shape({
+    content: PropTypes.string.isRequired,
+    isReqSuccess: PropTypes.bool.isRequired,
+  }).isRequired,
 };
 
 export default withStyles(styles)(NavBar);

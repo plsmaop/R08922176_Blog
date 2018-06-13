@@ -33,7 +33,7 @@ const ArticleListItem = ({
   title, author, time,
   partialContent, _id, classes,
 }) => (
-  <Card className={classes.card}>
+  <Card className={classes.card} rounded>
     <CardHeader
       avatar={<Avatar aria-label="Recipe">{author[0]}</Avatar>}
       title={author}

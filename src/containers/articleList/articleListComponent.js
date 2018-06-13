@@ -8,6 +8,10 @@ import LoadingScreen from '../../components/loadingScreen';
 const styles = {
   content: {
     marginTop: '5%',
+    marginBottom: '1%',
+  },
+  header: {
+    marginTop: '10%',
   },
 };
 
@@ -21,7 +25,7 @@ class ArticleList extends Component {
     if (isFetching) return (<LoadingScreen type="文章列表載入中" />);
     return (
       <div>
-        <Typography variant="headline" component="h2" >
+        <Typography variant="headline" component="h2">
           文章列表
         </Typography>
         <div className={classes.content}>

@@ -7,7 +7,6 @@ const { ArticleModel } = models;
 const { response } = functions;
 
 router.post('/newArticle', (req, res) => {
-  console.log(req.body);
   const {
     title, partialContent,
     content, time,
@@ -85,28 +84,24 @@ router.get('/articleList', (req, res) => {
     total: 0,
     list: [],
   };
-  ArticleModel.count()
-    .then((count) => {
-      responseData.total = count;
-      ArticleModel.find({}, '_id title author time partialContent').then((result) => {
-        responseData.list = result;
-        response(res, 200, 0, '成功獲取文章列表', responseData);
-      }).catch((err) => {
-        response(res, 200, 2, '獲取文章列表失敗');
-        console.log(err);
-      });
-    }).catch((err) => {
-      response(res, 200, 2, '獲取文章列表失敗');
-      console.log(err);
-    });
+  ArticleModel.find({}, '_id title author time partialContent').then((result) => {
+    responseData.list = result;
+    response(res, 200, 0, '成功獲取文章列表', responseData);
+  }).catch((err) => {
+    response(res, 200, 2, '獲取文章列表失敗');
+    console.log(err);
+  });
 });
 
 
 router.get('/:id', (req, res) => {
   const { id } = req.params;
+  if (!id) {
+    response(res, 200, 2, '文章不存在');
+    return;
+  }
   ArticleModel.findOne({ _id: id })
     .then((result) => {
-      console.log(result);
       if (result) response(res, 200, 0, '成功載入文章', result);
       else response(res, 200, 2, '文章不存在');
     }).catch((err) => {

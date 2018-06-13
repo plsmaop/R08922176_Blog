@@ -9,6 +9,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
+import { Redirect } from 'react-router';
 import LoadingScreen from '../../components/loadingScreen';
 
 const styles = {
@@ -16,6 +17,7 @@ const styles = {
     Width: '100%',
     textAlign: 'left',
     marginTop: '3%',
+    borderStyle: 'none',
   },
   bullet: {
     display: 'inline-block',
@@ -42,7 +44,7 @@ class Article extends Component {
     getArticle(id);
   }
   render() {
-    const { isFetching, classes } = this.props;
+    const { isFetching, classes, reqMsg } = this.props;
     const {
       author, title, content,
       time,
@@ -52,9 +54,10 @@ class Article extends Component {
       : EditorState.createEmpty();
     document.title = title;
     if (isFetching) return (<LoadingScreen type="文章載入中" />);
+    if (reqMsg.content === '載入文章失敗' || reqMsg.content === '文章不存在') return (<Redirect to="/404" />);
     return (
       <div>
-        <Card className={classes.card}>
+        <Card className={classes.card} elevation={0}>
           <CardHeader title={title} classes={{ title: classes.title }} />
           <CardHeader
             avatar={<Avatar aria-label="Recipe">{author ? author[0] : null}</Avatar>}
@@ -79,6 +82,10 @@ Article.propTypes = {
   id: PropTypes.string.isRequired,
   isFetching: PropTypes.bool.isRequired,
   classes: PropTypes.objectOf(String).isRequired,
+  reqMsg: PropTypes.shape({
+    content: PropTypes.string.isRequired,
+    isReqSuccess: PropTypes.bool.isRequired,
+  }).isRequired,
 };
 
 export default withStyles(styles)(Article);

@@ -1,123 +1,103 @@
 'use strict';
 
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
 var _express = require('express');
 
 var _express2 = _interopRequireDefault(_express);
+
+var _serveFavicon = require('serve-favicon');
+
+var _serveFavicon2 = _interopRequireDefault(_serveFavicon);
 
 var _http = require('http');
 
 var _http2 = _interopRequireDefault(_http);
 
-var _socket = require('socket.io');
+var _compression = require('compression');
 
-var _socket2 = _interopRequireDefault(_socket);
+var _compression2 = _interopRequireDefault(_compression);
 
-var _userData = require('./userData');
+var _connectHistoryApiFallback = require('connect-history-api-fallback');
 
-var _userData2 = _interopRequireDefault(_userData);
+var _connectHistoryApiFallback2 = _interopRequireDefault(_connectHistoryApiFallback);
+
+var _bodyParser = require('body-parser');
+
+var _bodyParser2 = _interopRequireDefault(_bodyParser);
+
+var _mongoose = require('mongoose');
+
+var _mongoose2 = _interopRequireDefault(_mongoose);
+
+var _bluebird = require('bluebird');
+
+var _bluebird2 = _interopRequireDefault(_bluebird);
+
+var _cookieParser = require('cookie-parser');
+
+var _cookieParser2 = _interopRequireDefault(_cookieParser);
+
+var _expressSession = require('express-session');
+
+var _expressSession2 = _interopRequireDefault(_expressSession);
+
+var _cors = require('cors');
+
+var _cors2 = _interopRequireDefault(_cors);
+
+var _api = require('./api');
+
+var _api2 = _interopRequireDefault(_api);
+
+var _config = require('./config');
+
+var _config2 = _interopRequireDefault(_config);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // config
 var backend = (0, _express2.default)();
 var server = _http2.default.Server(backend);
-var io = new _socket2.default(server);
 var port = process.env.PORT || 3001;
+backend.use((0, _compression2.default)());
+backend.use((0, _cors2.default)({ credentials: true, origin: true }));
+backend.use(_bodyParser2.default.urlencoded({ xtended: false }));
+backend.use((0, _cookieParser2.default)('i_am_lazyeeeee'));
+backend.use((0, _expressSession2.default)({
+  secret: 'i_am_lazyeeeee',
+  resave: true,
+  saveUninitialized: true,
+  cookie: {
+    maxAge: 60 * 1000 * 60,
+    secure: false,
+    httpOnly: false
+  }
+}));
 
-// user data
-var userPool = [];
-var robot = new _userData2.default('Badass Robot', 'suck');
-userPool.push(robot);
+// router
+backend.use('/', (0, _connectHistoryApiFallback2.default)());
+backend.use('/api', _api2.default);
 
-// chat history
-var chatHistory = {};
-
-// socket.io
-io.on('connection', function (socket) {
-  console.log('a user connected');
-  socket.emit('socket id', socket.id);
-  console.log(socket.id);
-  socket.emit('user list', userPool);
-
-  socket.on('dickkk', function () {
-    console.log('pong');
-    socket.emit('dickkk');
-  });
-
-  // add new user
-  socket.on('add user', function (name) {
-    console.log('add a user ' + name + ', id: ' + socket.id);
-    var user = new _userData2.default(name, socket.id);
-    userPool.push(user);
-    io.emit('user list', userPool);
-    // socket.handshake.session.save();
-  });
-
-  // load chat history
-  socket.on('create chat room', function (packet) {
-    var id = packet.id,
-        targetId = packet.targetId;
-
-    console.log(id + ' wants to chat with ' + targetId);
-    var chatHistoryEntry1 = id + targetId;
-    var chatHistoryEntry2 = targetId + id;
-    if (typeof chatHistory[chatHistoryEntry1] === 'undefined') {
-      if (typeof chatHistory[chatHistoryEntry2] !== 'undefined') {
-        chatHistory[chatHistoryEntry1] = chatHistory[chatHistoryEntry2];
-      } else {
-        var chatHistryArray = [];
-        chatHistory[chatHistoryEntry1] = chatHistryArray;
-        chatHistory[chatHistoryEntry2] = chatHistryArray;
-      }
+// data base
+_mongoose2.default.Promise = _bluebird2.default;
+_mongoose2.default.connect(_config2.default, function (err) {
+  if (err) {
+    console.log(err, 'failde to connect to db');
+    return;
+  }
+  console.log('connect to db successfully');
+  backend.listen(port, function (error) {
+    if (error) {
+      console.error('err:', error);
+    } else {
+      console.info('===> api server is running at port ' + port);
     }
-    socket.emit('load chat history', chatHistory[chatHistoryEntry1]);
-  });
-
-  // deliver msg
-  socket.on('msg', function (msgPacket) {
-    var from = msgPacket.from,
-        to = msgPacket.to;
-
-    var chatHistoryEntry1 = from + to;
-    var chatHistoryEntry2 = to + from;
-    if (typeof chatHistory[chatHistoryEntry1] === 'undefined') {
-      if (typeof chatHistory[chatHistoryEntry2] !== 'undefined') {
-        chatHistory[chatHistoryEntry1] = chatHistory[chatHistoryEntry2];
-      } else {
-        var chatHistryArray = [];
-        chatHistory[chatHistoryEntry1] = chatHistryArray;
-        chatHistory[chatHistoryEntry2] = chatHistryArray;
-      }
-    }
-    chatHistory[chatHistoryEntry1].push(msgPacket);
-    io.to(from).emit('msg', msgPacket);
-    console.log(chatHistory[chatHistoryEntry1]);
-    console.log(chatHistory[chatHistoryEntry2]);
-    if (to === 'suck') {
-      var badAssPacket = {
-        from: 'suck',
-        to: from,
-        msg: 'You Suck!!'
-      };
-      io.to(from).emit('msg', badAssPacket);
-      chatHistory[chatHistoryEntry1].push(badAssPacket);
-      return;
-    }
-    io.to(to).emit('msg', msgPacket);
-  });
-
-  socket.on('disconnect', function () {
-    console.log('a user go out');
-    userPool = userPool.filter(function (user) {
-      return user.id !== socket.id;
-    });
-    io.emit('user list', userPool);
   });
 });
 
-// backend.use('/', (req, res) => res.sendFile(__dirname+'/build/index.html'));
-backend.use(_express2.default.static(__dirname + '/build'));
-
-server.listen(port, function () {
-  return console.log('listen ' + port);
-});
+if (process.env.NODE_ENV === 'production') {
+  backend.use(_express2.default.static(_path2.default.join(__dirname, 'build')));
+}
