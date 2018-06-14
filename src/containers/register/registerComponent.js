@@ -50,15 +50,15 @@ class Register extends Component {
     this.handleClose = this.handleClose.bind(this);
   }
   componentWillReceiveProps(nextProps) {
-    if (nextProps.reqMsg.isReqSuccess && this.state.snackBarOpen) {
-      setTimeout(() => this.setState({ snackBarOpen: false }), 1500);
+    if (nextProps.reqMsg.content === '註冊成功，請使用這組帳密登入') {
+      // setTimeout(() => this.setState({ snackBarOpen: false }), 1500);
       setTimeout(() => this.setState({ redirect: true }), 2000);
     }
   }
   handleRegister() {
     const { username, password } = this.state;
     this.props.userRegister(username, password);
-    this.setState({ snackBarOpen: true });
+    // this.setState({ snackBarOpen: true });
   }
   handleInputChange(event, type) {
     if (type === 'username') this.setState({ username: event.target.value });

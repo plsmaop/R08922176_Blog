@@ -40,6 +40,7 @@ const initialState = {
   msg: {
     isReqSuccess: true,
     content: '',
+    code: 0,
   },
   userInfo: {
     username: '',
@@ -66,6 +67,7 @@ export default (state = initialState, action) => {
         msg: {
           isReqSuccess: action.isReqSuccess,
           content: action.msgContent,
+          code: action.code,
         },
       };
     case actionsTypes.RECIEVE_USER_INFO:

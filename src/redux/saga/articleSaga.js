@@ -25,7 +25,7 @@ export function* postArticle() {
     return yield call(post, '/article/newArticle', data);
   } catch (err) {
     console.log(err);
-    return yield put({ type: globalActionsTypes.SET_MESSAGE, msgContent: '網路錯誤', isReqSuccess: false });
+    return yield put({ code: 2, message: '網路異常，請稍候重試' });
   } finally {
     yield put({ type: globalActionsTypes.FETCH_END });
   }
@@ -47,6 +47,7 @@ export function* postArticleFlow() {
             type: globalActionsTypes.SET_MESSAGE,
             msgContent: res.message,
             isReqSuccess: true,
+            code: res.code,
           });
           yield put({
             type: ArticleActionsTypes.RECIEVE_ARTICLE,
@@ -60,12 +61,14 @@ export function* postArticleFlow() {
             type: globalActionsTypes.SET_MESSAGE,
             msgContent: res.message,
             isReqSuccess: false,
+            code: res.code,
           });
         } else {
           yield put({
             type: globalActionsTypes.SET_MESSAGE,
             msgContent: res.message,
             isReqSuccess: false,
+            code: res.code,
           });
         }
       }
@@ -78,7 +81,7 @@ export function* getArticleList() {
   try {
     return yield call(get, '/article/articleList');
   } catch (err) {
-    return yield put({ type: globalActionsTypes.SET_MESSAGE, msgContent: '網路錯誤', isReqSuccess: false });
+    return yield put({ code: 2, message: '網路異常，請稍候重試' });
   } finally {
     yield put({ type: globalActionsTypes.FETCH_END });
   }
@@ -96,12 +99,14 @@ export function* getArticleListFlow() {
           type: globalActionsTypes.SET_MESSAGE,
           msgContent: res.message,
           isReqSuccess: true,
+          code: res.code,
         });
       } else {
         yield put({
           type: globalActionsTypes.SET_MESSAGE,
           msgContent: res.message,
           isReqSuccess: false,
+          code: res.code,
         });
       }
     }
@@ -113,7 +118,7 @@ export function* getArticle(id) {
   try {
     return yield call(get, `/article/${id}`);
   } catch (err) {
-    return yield put({ type: globalActionsTypes.SET_MESSAGE, msgContent: '網路錯誤', isReqSuccess: false });
+    return yield put({ code: 2, message: '網路異常，請稍候重試' });
   } finally {
     yield put({ type: globalActionsTypes.FETCH_END });
   }
@@ -124,7 +129,7 @@ export function* delArticle(id) {
   try {
     return yield call(del, `/article/${id}`);
   } catch (err) {
-    return yield put({ type: globalActionsTypes.SET_MESSAGE, msgContent: '網路錯誤', isReqSuccess: false });
+    return yield put({ code: 2, message: '網路異常，請稍候重試' });
   } finally {
     yield put({ type: globalActionsTypes.FETCH_END });
   }
@@ -140,13 +145,15 @@ export function* delArticleFlow() {
         yield put({
           type: globalActionsTypes.SET_MESSAGE,
           msgContent: res.message,
-          isReqSuccess: false,
+          isReqSuccess: true,
+          code: res.code,
         });
       } else {
         yield put({
           type: globalActionsTypes.SET_MESSAGE,
           msgContent: res.message,
           isReqSuccess: false,
+          code: res.code,
         });
       }
     }
@@ -164,13 +171,15 @@ export function* getArticleFlow() {
         yield put({
           type: globalActionsTypes.SET_MESSAGE,
           msgContent: res.message,
-          isReqSuccess: false,
+          isReqSuccess: true,
+          code: res.code,
         });
       } else {
         yield put({
           type: globalActionsTypes.SET_MESSAGE,
           msgContent: res.message,
           isReqSuccess: false,
+          code: res.code,
         });
       }
     }

@@ -38,9 +38,15 @@ class NavBar extends React.Component {
     this.handleClose = this.handleClose.bind(this);
     this.handleMenu = this.handleMenu.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
+    this.handleSnackBarClose = this.handleSnackBarClose.bind(this);
   }
   componentDidMount() {
     this.props.userAuth();
+  }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.reqMsg.content.length > 0) {
+      this.setState({ snackBarOpen: true });
+    }
   }
   handleMenu(event) {
     this.setState({ anchorEl: event.currentTarget });
@@ -62,7 +68,7 @@ class NavBar extends React.Component {
     } = this.props;
     const { anchorEl, snackBarOpen } = this.state;
     const open = Boolean(anchorEl);
-    const login = (isLogin && !isFetching && userInfo) ? (
+    const login = (isLogin || (!isFetching && userInfo._id)) ? (
       <div>
         <IconButton
           aria-owns={open ? 'menu-appbar' : null}
@@ -119,7 +125,7 @@ class NavBar extends React.Component {
         </div>
       );
     if (snackBarOpen) {
-      setInterval(() => this.setState({ snackBarOpen: false }), 1500);
+      setTimeout(() => this.setState({ snackBarOpen: false }), 1500);
     }
     return (
       <div className={classes.root}>

@@ -37,15 +37,15 @@ class Login extends Component {
     this.handleClose = this.handleClose.bind(this);
   }
   componentWillReceiveProps(nextProps) {
-    if (nextProps.reqMsg.isReqSuccess && this.state.snackBarOpen) {
-      setTimeout(() => this.setState({ snackBarOpen: false }), 1500);
+    if (nextProps.reqMsg.content === '登入成功') {
+      // setTimeout(() => this.setState({ snackBarOpen: false }), 1500);
       setTimeout(() => this.setState({ redirect: true }), 2000);
     }
   }
   handleLogin() {
     const { username, password } = this.state;
     this.props.userLogin(username, password);
-    this.setState({ snackBarOpen: true });
+    // this.setState({ snackBarOpen: true });
   }
   handleInputChange(event, type) {
     if (type === 'username') this.setState({ username: event.target.value });
@@ -58,11 +58,11 @@ class Login extends Component {
     document.title = '登入';
     const {
       classes, isFetching,
-      reqMsg,
+      reqMsg, isLogin,
     } = this.props;
     const { snackBarOpen, redirect } = this.state;
     const { handleLogin, handleInputChange, handleClose } = this;
-    if (redirect) return (<Redirect to="/" />);
+    if (redirect || isLogin) return (<Redirect to="/" />);
     return (
       <div className={classes.root}>
         <Typography variant="title" color="inherit" className={classes.flex}>
