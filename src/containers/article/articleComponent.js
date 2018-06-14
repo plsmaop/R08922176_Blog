@@ -1,22 +1,22 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Editor, EditorState, convertFromRaw } from 'draft-js';
-import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
+import Grid from '@material-ui/core/Grid';
 import { Redirect } from 'react-router';
 import LoadingScreen from '../../components/loadingScreen';
+import ButtonProgress from '../../components/buttonProgress';
+import Alert from '../../components/alert';
 
 const styles = {
   card: {
     Width: '100%',
     textAlign: 'left',
-    marginTop: '3%',
     borderStyle: 'none',
   },
   bullet: {
@@ -28,7 +28,7 @@ const styles = {
     marginTop: 0,
   },
   content: {
-
+    marginTop: 0,
   },
   sub: {
     paddingTop: 0,
@@ -39,22 +39,53 @@ const styles = {
 };
 
 class Article extends Component {
+  constructor() {
+    super();
+    this.state = { alertOpen: false };
+    this.delArticle = this.delArticle.bind(this);
+  }
   componentDidMount() {
     const { id, getArticle } = this.props;
     getArticle(id);
   }
+  delArticle() {
+    this.setState({ alertOpen: true });
+  }
   render() {
-    const { isFetching, classes, reqMsg } = this.props;
+    const {
+      isFetching, classes, reqMsg,
+      username,
+    } = this.props;
     const {
       author, title, content,
       time,
     } = this.props.articleDetail;
+    if (reqMsg.content === '刪除成功!') return (<Redirect to="/" />);
+    if (reqMsg.content === '登入逾期，請重新登入') return (<Redirect to="/login" />);
+    if (reqMsg.content === '載入文章失敗' || reqMsg.content === '文章不存在') return (<Redirect to="/404" />);
     const editorState = content ?
       EditorState.createWithContent(convertFromRaw(JSON.parse(content)))
       : EditorState.createEmpty();
+    const authorFunction = author === username ? (
+      <Grid container spacing={24} direction="row" className={classes.author}>
+        <ButtonProgress
+          type="編輯"
+          isFetching={isFetching}
+          className={classes.content}
+          handleClick={() => alert('尚未開放')}
+        />
+        <ButtonProgress
+          type="刪除"
+          isFetching={isFetching}
+          className={classes.content}
+          handleClick={this.delArticle}
+        />
+      </Grid>) : null;
+    if (isFetching) {
+      document.title = '載入中...';
+      return (<LoadingScreen type="文章載入中" />);
+    }
     document.title = title;
-    if (isFetching) return (<LoadingScreen type="文章載入中" />);
-    if (reqMsg.content === '載入文章失敗' || reqMsg.content === '文章不存在') return (<Redirect to="/404" />);
     return (
       <div>
         <Card className={classes.card} elevation={0}>
@@ -66,11 +97,17 @@ class Article extends Component {
             className={classes.sub}
           />
           <CardContent className={classes.content}>
-            <Typography component="p" className={classes.pos}>
+            {authorFunction}
+            <Typography className={classes.pos}>
               <Editor editorState={editorState} readOnly />
             </Typography>
           </CardContent>
         </Card>
+        <Alert
+          id={this.props.id}
+          open={this.state.alertOpen}
+          delArticle={this.props.delArticle}
+        />
       </div>
     );
   }
@@ -79,7 +116,9 @@ class Article extends Component {
 Article.propTypes = {
   articleDetail: PropTypes.objectOf(String).isRequired,
   getArticle: PropTypes.func.isRequired,
+  delArticle: PropTypes.func.isRequired,
   id: PropTypes.string.isRequired,
+  username: PropTypes.string.isRequired,
   isFetching: PropTypes.bool.isRequired,
   classes: PropTypes.objectOf(String).isRequired,
   reqMsg: PropTypes.shape({

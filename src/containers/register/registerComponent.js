@@ -49,18 +49,12 @@ class Register extends Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleClose = this.handleClose.bind(this);
   }
-  /* componentWillMount() {
-    console.log(this.props.reqMsg.isReqSuccess, this.state.snackBarOpen);
-    if (this.props.reqMsg.isReqSuccess && this.state.snackBarOpen) {
-      setTimeout(() => this.setState({ redirect: true }), 1000);
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.reqMsg.isReqSuccess && this.state.snackBarOpen) {
+      setTimeout(() => this.setState({ snackBarOpen: false }), 1500);
+      setTimeout(() => this.setState({ redirect: true }), 2000);
     }
-  } */
-  /* componentWillMount() {
-    console.log('cidk');
-    if (this.props.reqMsg.isReqSuccess && this.state.snackBarOpen) {
-      setTimeout(() => this.setState({ redirect: true }), 1000);
-    }
-  } */
+  }
   handleRegister() {
     const { username, password } = this.state;
     this.props.userRegister(username, password);
@@ -78,10 +72,6 @@ class Register extends Component {
     const { snackBarOpen, redirect } = this.state;
     const { classes, isFetching, reqMsg } = this.props;
     const { handleRegister, handleInputChange, handleClose } = this;
-    if (reqMsg.isReqSuccess && snackBarOpen) {
-      setTimeout(() => this.setState({ snackBarOpen: false }), 1500);
-      setTimeout(() => this.setState({ redirect: true }), 2000);
-    }
     if (redirect) return (<Redirect to="/login" />);
     return (
       <div className={classes.root}>

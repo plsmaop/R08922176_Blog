@@ -18,6 +18,7 @@ const backend = express();
 const server = http.Server(backend);
 const port = process.env.PORT || 3001;
 backend.use(compression());
+backend.use(favicon(path.join(__dirname, 'favicon.ico')));
 backend.use(cors({ credentials: true, origin: true }));
 backend.use(bodyParser.urlencoded({ xtended: false }));
 backend.use(cookieParser('i_am_lazyeeeee'));

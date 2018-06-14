@@ -36,6 +36,12 @@ class Login extends Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleClose = this.handleClose.bind(this);
   }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.reqMsg.isReqSuccess && this.state.snackBarOpen) {
+      setTimeout(() => this.setState({ snackBarOpen: false }), 1500);
+      setTimeout(() => this.setState({ redirect: true }), 2000);
+    }
+  }
   handleLogin() {
     const { username, password } = this.state;
     this.props.userLogin(username, password);
@@ -56,10 +62,6 @@ class Login extends Component {
     } = this.props;
     const { snackBarOpen, redirect } = this.state;
     const { handleLogin, handleInputChange, handleClose } = this;
-    if (reqMsg.isReqSuccess && snackBarOpen) {
-      setTimeout(() => this.setState({ snackBarOpen: false }), 1500);
-      setTimeout(() => this.setState({ redirect: true }), 2000);
-    }
     if (redirect) return (<Redirect to="/" />);
     return (
       <div className={classes.root}>

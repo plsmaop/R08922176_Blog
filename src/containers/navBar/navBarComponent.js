@@ -11,7 +11,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import { Link } from 'react-router-dom';
 import Snackbar from '@material-ui/core/Snackbar';
-import grey from '@material-ui/core/colors/grey';
 
 const styles = {
   root: {
@@ -59,7 +58,7 @@ class NavBar extends React.Component {
   render() {
     const {
       classes, isLogin, isFetching,
-      userInfo, reqMsg,
+      userInfo, reqMsg, getArticleList,
     } = this.props;
     const { anchorEl, snackBarOpen } = this.state;
     const open = Boolean(anchorEl);
@@ -96,7 +95,8 @@ class NavBar extends React.Component {
           <MenuItem onClick={this.handleLogout}>登出</MenuItem>
         </Menu>
         <Button
-          color="inherit"
+          variant="raised"
+          color="primary"
           onClick={this.handleMenu}
         > {`Hi, ${userInfo.username}`}
         </Button>
@@ -105,12 +105,14 @@ class NavBar extends React.Component {
       (
         <div>
           <Button
-            color="inherit"
+            variant="raised"
+            color="primary"
             component={({ ...props }) => <Link to="/login" {...props} />}
           >登入
           </Button>
           <Button
-            color="inherit"
+            variant="raised"
+            color="primary"
             component={({ ...props }) => <Link to="/register" {...props} />}
           >註冊
           </Button>
@@ -121,18 +123,21 @@ class NavBar extends React.Component {
     }
     return (
       <div className={classes.root}>
-        <AppBar position="fixed" color="default" elevation={0} className={classes.bar}>
+        <AppBar position="fixed" color="primary" elevation={0} className={classes.bar}>
           <Toolbar>
             <Typography
               variant="title"
               color="inherit"
               className={classes.flex}
               component={({ ...props }) => <Link to="/" {...props} />}
+              onClick={getArticleList}
             >ㄅㄌㄍ
             </Typography>
             <Button
-              color="inherit"
+              variant="raised"
+              color="primary"
               component={({ ...props }) => <Link to="/articleList" {...props} />}
+              onClick={getArticleList}
             >文章列表
             </Button>
             {login}
@@ -156,6 +161,7 @@ NavBar.propTypes = {
   isLogin: PropTypes.bool.isRequired,
   isFetching: PropTypes.bool.isRequired,
   userInfo: PropTypes.objectOf(String).isRequired,
+  getArticleList: PropTypes.func.isRequired,
   classes: PropTypes.objectOf(String).isRequired,
   userAuth: PropTypes.func.isRequired,
   userLogout: PropTypes.func.isRequired,

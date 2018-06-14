@@ -50,9 +50,8 @@ class EditorToHTML extends Component {
     const contentState = editorState.getCurrentContent();
     this.props.updateContent(JSON.stringify(convertToRaw(contentState)));
 
-    const plainText = contentState.getPlainText();
-    const len = plainText.length;
-    if (len < 20 && len > 0) this.props.updatePartialContent(`${plainText}...`);
+    const plainText = contentState.getPlainText().substr(0, 20);
+    this.props.updatePartialContent(`${plainText}...`);
     // console.log(htmlToDraft(draftToHtml(convertToRaw(editorState.getCurrentContent()))));
   }
   handleTitleChange(e) {

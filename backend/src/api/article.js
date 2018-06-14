@@ -31,21 +31,38 @@ router.post('/newArticle', (req, res) => {
 });
 
 router.patch('/:id', (req, res) => {
+  if (!req.session.userInfo) {
+    response(res, 200, 1, '登入逾期，請重新登入');
+    return;
+  }
+  const { id } = req.params;
+  if (!id) {
+    response(res, 200, 2, '文章不存在');
+    return;
+  }
   const {
     title,
     content,
     time,
-    shortContent,
+    partialContent,
   } = req.body;
-  const { id } = req.params;
+  const author = req.session.userInfo.username;
+  ArticleModel.findOne({ _id: id }).then((result) => {
+    if (!result) response(res, 200, 2, '文章不存在');
+    else if (result.author !== author) response(res, 200, 1, '權限錯誤');
+  }).catch((err) => {
+    console.log(err);
+    response(res, 200, 2, '更新失敗!');
+  });
   ArticleModel.update(
     { _id: id },
     {
-      title, content, time, shortContent,
+      title, content, time, partialContent,
     },
   ).then((result) => {
     console.log(result);
-    response(res, 200, 0, '更新成功', result);
+    if (result.author !== author) response(res, 200, 1, '權限錯誤');
+    else response(res, 200, 0, '更新成功', result);
   }).catch((err) => {
     console.log(err);
     response(res, 200, 2, '更新失敗');
@@ -54,27 +71,31 @@ router.patch('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   const { id } = req.params;
+  if (!id) {
+    response(res, 200, 2, '文章不存在');
+    return;
+  }
   if (!req.session.userInfo) {
     response(res, 200, 1, '登入逾期，請重新登入');
     return;
   }
   const author = req.session.userInfo.username;
-  ArticleModel.findOne({ _id: id }).then((result) => {
+  /* ArticleModel.findOne({ _id: id }).then((result) => {
     if (!result) response(res, 200, 2, '文章不存在');
     else if (result.author !== author) response(res, 200, 1, '權限錯誤');
   }).catch((err) => {
-    console.log(err);
-    response(res, 200, 2, '刪除失敗!');
-  });
+    // console.log(err);
+    // response(res, 200, 2, '刪除失敗!');
+  }); */
   ArticleModel.remove({ _id: id })
     .then((result) => {
-      if (result.result.n === 1) {
+      if (result.n === 1) {
         response(res, 200, 0, '刪除成功!');
       } else {
         response(res, 200, 2, '文章不存在');
       }
     }).catch((err) => {
-      console.log(err);
+      // console.log(err);
       response(res, 200, 2, '刪除失敗!');
     });
 });

@@ -41,7 +41,11 @@ const initialState = {
     isReqSuccess: true,
     content: '',
   },
-  userInfo: {},
+  userInfo: {
+    username: '',
+    userType: '',
+    userId: '',
+  },
 };
 
 // reudcer

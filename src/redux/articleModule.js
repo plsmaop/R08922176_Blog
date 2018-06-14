@@ -9,6 +9,7 @@ export const actionsTypes = {
   RECIEVE_ARTICLE_LIST: 'RECIEVE_ARTICLE_LIST',
   GET_ARTICLE: 'GET_ARTICLE',
   RECIEVE_ARTICLE: 'RECIEVE_ARTICLE',
+  DEL_ARTICLE: 'DEL_ARTICLE',
 };
 
 export const actions = {
@@ -30,6 +31,10 @@ export const actions = {
   }),
   getArticle: id => ({
     type: actionsTypes.GET_ARTICLE,
+    id,
+  }),
+  delArticle: id => ({
+    type: actionsTypes.DEL_ARTICLE,
     id,
   }),
 };

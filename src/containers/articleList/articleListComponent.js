@@ -22,7 +22,11 @@ class ArticleList extends Component {
   render() {
     document.title = 'ㄅㄌㄍ';
     const { articleList, isFetching, classes } = this.props;
-    if (isFetching) return (<LoadingScreen type="文章列表載入中" />);
+    if (isFetching) {
+      document.title = '載入中...';
+      return (<LoadingScreen type="文章列表載入中" />);
+    }
+    document.title = 'ㄅㄌㄍ';
     return (
       <div>
         <Typography variant="headline" component="h2">

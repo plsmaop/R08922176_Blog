@@ -119,9 +119,44 @@ export function* getArticle(id) {
   }
 }
 
+export function* delArticle(id) {
+  yield put({ type: globalActionsTypes.FETCH_START });
+  try {
+    return yield call(del, `/article/${id}`);
+  } catch (err) {
+    return yield put({ type: globalActionsTypes.SET_MESSAGE, msgContent: '網路錯誤', isReqSuccess: false });
+  } finally {
+    yield put({ type: globalActionsTypes.FETCH_END });
+  }
+}
+
+export function* delArticleFlow() {
+  while (true) {
+    const req = yield take(ArticleActionsTypes.DEL_ARTICLE);
+    console.log(req);
+    const res = yield call(delArticle, req.id);
+    if (res) {
+      if (res.code === 0) {
+        yield put({
+          type: globalActionsTypes.SET_MESSAGE,
+          msgContent: res.message,
+          isReqSuccess: false,
+        });
+      } else {
+        yield put({
+          type: globalActionsTypes.SET_MESSAGE,
+          msgContent: res.message,
+          isReqSuccess: false,
+        });
+      }
+    }
+  }
+}
+
 export function* getArticleFlow() {
   while (true) {
     const req = yield take(ArticleActionsTypes.GET_ARTICLE);
+    console.log(req);
     const res = yield call(getArticle, req.id);
     if (res) {
       if (res.code === 0) {
