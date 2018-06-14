@@ -62,7 +62,10 @@ class Article extends Component {
     } = this.props.articleDetail;
     if (reqMsg.content === '刪除成功!') return (<Redirect to="/" />);
     if (reqMsg.content === '登入逾期，請重新登入') return (<Redirect to="/login" />);
-    if (reqMsg.content === '載入文章失敗' || reqMsg.content === '文章不存在') return (<Redirect to="/404" />);
+    if (reqMsg.content === '載入文章失敗'
+      || reqMsg.content === '文章不存在'
+      || reqMsg.content === '網路異常，請稍候重試'
+    ) return (<Redirect to="/404" />);
     const editorState = content ?
       EditorState.createWithContent(convertFromRaw(JSON.parse(content)))
       : EditorState.createEmpty();

@@ -45,6 +45,13 @@ class EditorToHTML extends Component {
     this.handleSendOut = this.handleSendOut.bind(this);
     this.handleClose = this.handleClose.bind(this);
   }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.reqMsg.content === '登入逾期，請重新登入') {
+      setTimeout(() => this.setState({ redirectToLogin: true }), 2000);
+    } else if (nextProps.reqMsg.content === '發文成功') {
+      setTimeout(() => this.setState({ redirectToArticle: true }), 2000);
+    }
+  }
   onEditorStateChange(editorState) {
     this.setState({ editorState });
     const contentState = editorState.getCurrentContent();
@@ -59,7 +66,7 @@ class EditorToHTML extends Component {
   }
   handleSendOut() {
     this.props.postArticle();
-    this.setState({ snackBarOpen: true });
+    // this.setState({ snackBarOpen: true });
   }
   handleClose() {
     this.setState({ snackBarOpen: false });
@@ -75,19 +82,11 @@ class EditorToHTML extends Component {
       redirectToArticle,
     } = this.state;
     const {
-      isLogin, isFetching, classes,
+      isFetching, classes,
       reqMsg,
     } = this.props;
     if (redirectToLogin) return (<Redirect to="/login" />);
     if (redirectToArticle) return (<Redirect to={`/article/${articleDetail._id}`} />);
-    if (reqMsg.content === '發文成功') {
-      setTimeout(() => this.setState({ snackBarOpen: false }), 1500);
-      setInterval(() => this.setState({ redirectToArticle: true }), 2000);
-    }
-    if (!isLogin && !reqMsg.isReqSuccess) {
-      setTimeout(() => this.setState({ snackBarOpen: false }), 1500);
-      setTimeout(() => this.setState({ redirectToLogin: true }), 2000);
-    }
     return (
       <div>
         <Typography variant="headline" component="h2">

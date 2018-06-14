@@ -138,8 +138,8 @@ export function* delArticle(id) {
 export function* delArticleFlow() {
   while (true) {
     const req = yield take(ArticleActionsTypes.DEL_ARTICLE);
-    console.log(req);
     const res = yield call(delArticle, req.id);
+    console.log(res);
     if (res) {
       if (res.code === 0) {
         yield put({
@@ -156,6 +156,13 @@ export function* delArticleFlow() {
           code: res.code,
         });
       }
+    } else {
+      yield put({
+        type: globalActionsTypes.SET_MESSAGE,
+        msgContent: '網路異常，請稍候重試',
+        isReqSuccess: false,
+        code: 2,
+      });
     }
   }
 }
@@ -182,6 +189,13 @@ export function* getArticleFlow() {
           code: res.code,
         });
       }
+    } else {
+      yield put({
+        type: globalActionsTypes.SET_MESSAGE,
+        msgContent: '網路異常，請稍候重試',
+        isReqSuccess: false,
+        code: 2,
+      });
     }
   }
 }
