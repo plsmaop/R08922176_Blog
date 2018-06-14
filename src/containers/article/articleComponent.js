@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Editor, EditorState, convertFromRaw } from 'draft-js';
+import { EditorState, convertFromRaw } from 'draft-js';
+import { Editor } from 'react-draft-wysiwyg';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
 import Grid from '@material-ui/core/Grid';
 import { Redirect } from 'react-router';
@@ -35,6 +35,9 @@ const styles = {
   },
   title: {
     fontSize: '3em',
+  },
+  noToolBar: {
+    display: 'none !important',
   },
 };
 
@@ -101,9 +104,11 @@ class Article extends Component {
           />
           <CardContent className={classes.content}>
             {authorFunction}
-            <Typography className={classes.pos}>
-              <Editor editorState={editorState} readOnly />
-            </Typography>
+            <Editor
+              editorState={editorState}
+              toolbarClassName={classes.noToolBar}
+              readOnly
+            />
           </CardContent>
         </Card>
         <Alert
