@@ -1,6 +1,11 @@
 # HW5 BLOG
 * HW of the course [EE3035 Web Programming](https://www.facebook.com/groups/NTURicWebProg/?ref=br_rs)
 * [DEMO](http://blog9487.herokuapp.com/) (Deployed on Heroku)
+## Used Packages and Framworks
+* Front-end: react, react-router, redux, redux saga, axios
+* Backend: NodeJs, express, mongoose, 
+* Database: Mongodb
+* UI: material-ui
 ## Usage
 * The server will connect to [online mongodb database](https://mlab.com/)
 * git clone
