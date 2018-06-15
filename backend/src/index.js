@@ -50,7 +50,7 @@ mongoose.connect(dbUrl, (err) => {
     if (error) {
       console.error('err:', error);
     } else {
-      console.info(`===> api server is running at port ${port}`);
+      console.info(`===> api server is running`);
     }
   });
 });
