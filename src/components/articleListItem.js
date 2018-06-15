@@ -61,7 +61,7 @@ ArticleListItem.propTypes = {
   author: PropTypes.string.isRequired,
   time: PropTypes.string.isRequired,
   partialContent: PropTypes.string.isRequired,
-   _id: PropTypes.string.isRequired,
+  _id: PropTypes.string.isRequired,
   classes: PropTypes.objectOf(String).isRequired,
 };
 

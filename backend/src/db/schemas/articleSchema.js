@@ -5,5 +5,6 @@ export default new mongoose.Schema({
   content: String,
   partialContent: String,
   time: String,
+  timestamp: String,
   author: String,
 });

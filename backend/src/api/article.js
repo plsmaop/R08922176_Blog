@@ -9,7 +9,7 @@ const { response } = functions;
 router.post('/newArticle', (req, res) => {
   const {
     title, partialContent,
-    content, time,
+    content, time, timestamp,
   } = req.body;
   if (!req.session.userInfo) response(res, 200, 1, '登入逾期，請重新登入');
   else {
@@ -20,6 +20,7 @@ router.post('/newArticle', (req, res) => {
       partialContent,
       time,
       author,
+      timestamp,
     });
     tempArticle.save().then((data) => {
       response(res, 200, 0, '發文成功', data);
@@ -105,7 +106,7 @@ router.get('/articleList', (req, res) => {
     total: 0,
     list: [],
   };
-  ArticleModel.find({}, '_id title author time partialContent').then((result) => {
+  ArticleModel.find({}, '_id title author time partialContent').sort({ timestamp: -1 }).then((result) => {
     responseData.list = result;
     response(res, 200, 0, '成功獲取文章列表', responseData);
   }).catch((err) => {

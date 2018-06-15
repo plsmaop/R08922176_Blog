@@ -10,12 +10,15 @@ export function* postArticle() {
     const content = yield select(state => state.article.articleDraft.content);
     const id = yield select(state => state.article.articleDraft.id);
     const partialContent = yield select(state => state.article.articleDraft.partialContent);
+    const dateTime = Date.now();
+    const timestamp = Math.floor(dateTime / 1000);
     const data = {
       title,
       content,
       id,
       partialContent,
       time: new Date(),
+      timestamp,
     };
     /* if (id) {
       return yield call(post, '/article/updateArticle', data);
