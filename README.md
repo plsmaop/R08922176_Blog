@@ -1,5 +1,5 @@
 # HW5 BLOG
-* HW of the course [EE3035 Web Programming](https://www.facebook.com/groups/NTURicWebProg/?ref=br_rs)
+* HW of the course [Cloud Computing and Cyber Security](http://esys.ee.ntu.edu.tw/course/view.php?id=3)
 * [DEMO](http://blog9487.herokuapp.com/) (Deployed on Heroku)
 ## Used Packages and Framworks
 * Front-end: react, react-router, redux, redux saga, axios
