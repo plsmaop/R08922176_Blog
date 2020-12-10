@@ -10,17 +10,17 @@
 * The server will connect to [online mongodb database](https://mlab.com/)
 * git clone
 ```
-git clone https://github.com/plsmaop/B03102082_Blog.git
+git clone https://github.com/plsmaop/R08922176_Blog.git
 ```
 * start the server and listen on port 3001
 ```
-cd B03102082_Blog/backend
+cd R08922176_Blog/backend
 npm install
 npm run start
 ```
 * open another terminal and run ReactJS (I use `create-react-app`)
 ```
-cd B03102082_Blog
+cd R08922176_Blog
 npm install
 npm run start 
 ```
